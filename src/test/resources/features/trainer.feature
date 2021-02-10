@@ -5,12 +5,40 @@ Feature: Start a game
   Rule: A player can have multiple games
   Rule: The points start at 0
 
+  As a player,
+  I want to start a game,
+  So that I can play a game of Lingo
+
+  Scenario: A game is started
+  Given I am on lingotrainer page
+  When I click the play a game button
+  Then a game is being build
+  And the player can play the game
+
 Feature: Pause a game
   The player pauses and exits the game.
   The game state is saved.
 
+  As a player,
+  I want to pause a game,
+  So that I can continue a game whenever I want
+
+  Scenario: A game is being paused
+  Given A game is in the progress of being played
+  When I click the pause button
+  Then the game saves and is being paused
+
 Feature: Resume a game
   The player continues playing a game that was paused.
+
+  As a player,
+  I want to resume a game,
+  So that I can start a paused game whenever I want
+
+  Scenario: A game is being resumed
+  Given there is a paused game
+  When I click on the resume button
+  Then the paused games continues
 
 Feature: Play a game
   The player plays rounds until they lose a round or pause the game.
@@ -19,7 +47,14 @@ Feature: Play a game
     The number of letters of words in sequential rounds follow the pattern:
       5, 6, 7.
 
-  Rule:
+  As a player,
+  I want to Play a game,
+  So that I can train myself to be better at lingo
+
+  Scenario: a game is being played
+  Given A game has been started
+  When I play a round
+  Then the game should function
 
 Feature: Play a round
   The player is shown the first letter of a word.
@@ -29,12 +64,41 @@ Feature: Play a round
     they get points, the round ends, and a new round starts.
   If not, the game ends.
 
-
   Rule: There can only be 5 turns per round
+
+  As a player,
+  I want to play a round,
+  So that I can succesfully guess a word
+
+
+  Scenario: Plays a round succesfully
+    Given I correctly guess the word before the 5 turns
+    When the game verifies the guess word
+    Then I continue to the next round
+
+  Scenario: Plays a round unsuccesfully
+    Given I didn't correctly guess the word before the 5 turns
+    When the game rejects the word
+    Then The game stops
 
 Feature: Guess a word
   The player enters a guess.
   After each guess, the player receives feedback.
+
+  As a player,
+  I want to guess a word,
+  So that I can get more points
+
+  Scenario: A word is being guessed correctly
+    Given I am playing a round
+    When I guess the word correctly
+    Then I get points
+
+  Scenario: A word isn't being guessed correctly
+    Given I am playing a round
+    When I guess the word incorrect
+    Then I get feedback
+    And I get another guess
 
 Feature: Receiving feedback
   The player gets feedback after a guess.
@@ -43,3 +107,15 @@ Feature: Receiving feedback
   and the length of the guess matches the word.
   If it's invalid the player gets notified.
   if it's valid the player gets feedback.
+
+  As a player,
+  I want to receive feedback,
+  So that I can correctly guess the word in the future
+
+  Scenario: Feedback is received
+      Given I guessed a word wrong
+      When the game verifies the word
+      Then I get feedback
+      And the game tells me which letters are right
+      And the game tells me which letters are correct but on the wrong spot
+      And the game tells me which letters are incorrect
