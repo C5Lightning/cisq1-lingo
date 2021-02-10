@@ -56,6 +56,12 @@ Feature: Play a game
   When I play a round
   Then the game should function
 
+    #Example
+    | previous length | next length |
+    | 5               | 6           |
+    | 6               | 7           |
+    | 7               | 5           |
+
 Feature: Play a round
   The player is shown the first letter of a word.
 
@@ -76,10 +82,11 @@ Feature: Play a round
     When the game verifies the guess word
     Then I continue to the next round
 
-  Scenario: Plays a round unsuccesfully
+  #Failure path
     Given I didn't correctly guess the word before the 5 turns
     When the game rejects the word
     Then The game stops
+
 
 Feature: Guess a word
   The player enters a guess.
@@ -94,11 +101,17 @@ Feature: Guess a word
     When I guess the word correctly
     Then I get points
 
-  Scenario: A word isn't being guessed correctly
+    #Failure Path
     Given I am playing a round
     When I guess the word incorrect
     Then I get feedback
     And I get another guess
+
+      #Example
+      | Guessed Word    | Word        |
+      | Plate           |  Plato      |
+      | Druif           | Doelen      |
+      | Angst           | Angst       |
 
 Feature: Receiving feedback
   The player gets feedback after a guess.
@@ -119,3 +132,9 @@ Feature: Receiving feedback
       And the game tells me which letters are right
       And the game tells me which letters are correct but on the wrong spot
       And the game tells me which letters are incorrect
+
+        #Example
+        | Word            | Feedback                                           |
+        | Plate           | P staat op de verkeerde plek                       |
+        | Druif           | D staat op de goede plek en i op de verkeerde      |
+        | Angst           | Alles staat op de goede plek                       |
