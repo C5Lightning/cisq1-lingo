@@ -54,7 +54,8 @@ Feature: Play a game
   Scenario: a game is being played
   Given A game has been started
   When I play a round
-  Then the game should function
+  Then the word had "<previous length>" letters
+  And the next round has "<next length>" letters
 
     #Example
     | previous length | next length |
@@ -98,20 +99,22 @@ Feature: Guess a word
 
   Scenario: A word is being guessed correctly
     Given I am playing a round
-    When I guess the word correctly
+    When I guess "<Guess Word>"
+    And The "<guessed word>" is the same as "<Word>"
     Then I get points
 
     #Failure Path
     Given I am playing a round
-    When I guess the word incorrect
-    Then I get feedback
+    When I guess "<Guessed Word>"
+    And The "<Guessed Word>" is not equal to "<Word>"
+    Then I get "<Feedback>"
     And I get another guess
 
       #Example
-      | Guessed Word    | Word        |
-      | Plate           |  Plato      |
-      | Druif           | Doelen      |
-      | Angst           | Angst       |
+      | Guessed Word    | Word        | Feedback |
+      | Plate           |  Plato      | P L A T  |
+      | Druif           | Doelen      | D        |
+      | Angst           | Angst       |          |
 
 Feature: Receiving feedback
   The player gets feedback after a guess.
@@ -126,15 +129,16 @@ Feature: Receiving feedback
   So that I can correctly guess the word in the future
 
   Scenario: Feedback is received
-      Given I guessed a word wrong
-      When the game verifies the word
-      Then I get feedback
+      Given I Guess "<Guessed Word>"
+      And "<Guessed Word>" is not equal to "<Word>"
+      When the game verifies "<Guessed Word>"
+      Then I get "<Feedback>"
       And the game tells me which letters are right
       And the game tells me which letters are correct but on the wrong spot
       And the game tells me which letters are incorrect
 
         #Example
-        | Word            | Feedback                                           |
-        | Plate           | P staat op de verkeerde plek                       |
-        | Druif           | D staat op de goede plek en i op de verkeerde      |
-        | Angst           | Alles staat op de goede plek                       |
+        | Guessed Word    | Word  | Feedback  |
+        | Plate           | Plato | P L A T   |
+        | Appel           | Aapje | A   P     |
+        | Angst           | Angst |           |
