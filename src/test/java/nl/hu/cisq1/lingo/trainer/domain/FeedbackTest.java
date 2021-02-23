@@ -1,5 +1,6 @@
 package nl.hu.cisq1.lingo.trainer.domain;
 
+import nl.hu.cisq1.lingo.trainer.domain.exception.InvalidFeedbackException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +12,7 @@ class FeedbackTest {
 
 	@Test
 	@DisplayName("Word is guessed if all letters are correct")
-	void wordIsGuessed(){
+	void wordIsGuessed() {
 		Feedback fb = new Feedback("woord",
 				List.of(Mark.CORRECT, Mark.CORRECT, Mark.CORRECT,
 						Mark.CORRECT, Mark.CORRECT));
@@ -21,7 +22,7 @@ class FeedbackTest {
 
 	@Test
 	@DisplayName("Word is not guessed if atleast one letter is incorrect")
-	void wordIsNotGuessed(){
+	void wordIsNotGuessed() {
 		Feedback fb = new Feedback("woord",
 				List.of(Mark.CORRECT, Mark.ABSENT, Mark.CORRECT,
 						Mark.CORRECT, Mark.CORRECT));
@@ -31,7 +32,7 @@ class FeedbackTest {
 
 	@Test
 	@DisplayName("Word is not a valid attempt at a guess")
-	void guessIsInvalid(){
+	void guessIsInvalid() {
 		Feedback fb = new Feedback("woord",
 				List.of(Mark.CORRECT, Mark.CORRECT, Mark.CORRECT,
 						Mark.CORRECT, Mark.CORRECT,
@@ -42,11 +43,31 @@ class FeedbackTest {
 
 	@Test
 	@DisplayName("Word is a valid attempt at a guess")
-	void guessIsNotInvalid(){
+	void guessIsNotInvalid() {
 		Feedback fb = new Feedback("woord",
 				List.of(Mark.CORRECT, Mark.CORRECT, Mark.CORRECT,
 						Mark.CORRECT, Mark.CORRECT));
 		assertFalse(fb.guessIsInvalid());
 
+	}
+
+	@Test
+	@DisplayName("Word is not a valid attempt at a guess")
+	void lengthIsInvalidException() {
+		assertThrows(InvalidFeedbackException.class,
+				() -> new Feedback("woord", List.of(Mark.CORRECT)));
+	}
+
+	@Test
+	@DisplayName("Word is guessed if all letters are correct")
+	void wordIsGuessedStatic() {
+		assertTrue(Feedback.correct("woord").isWordGuessed());
+
+	}
+
+	@Test
+	@DisplayName("Word is not guessed if atleast one letter is incorrect")
+	void guessIsInvalidStatic() {
+		assertTrue(Feedback.invalid("woord").guessIsInvalid());
 	}
 }

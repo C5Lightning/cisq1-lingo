@@ -2,10 +2,13 @@ package nl.hu.cisq1.lingo.trainer.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import nl.hu.cisq1.lingo.trainer.domain.exception.InvalidFeedbackException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Getter
 @Setter
@@ -13,14 +16,19 @@ public class Feedback {
 	private String attempt;
 	private List<Mark> hints;
 
-	public Feedback(String attempt) {
-		this.attempt = attempt;
-		this.hints = new ArrayList<>();
-	}
-
-	public Feedback(String attempt, List<Mark> hints) {
+	public Feedback(String attempt, List<Mark> hints) throws InvalidFeedbackException {
 		this.attempt = attempt;
 		this.hints = hints;
+	}
+
+	public static Feedback correct(String attempt) {
+		return new Feedback(attempt, IntStream.range(0, attempt.length())
+				.mapToObj(i -> Mark.CORRECT).collect(Collectors.toList()));
+	}
+
+	public static Feedback invalid(String attempt) {
+		return new Feedback(attempt, IntStream.range(0, attempt.length())
+				.mapToObj(i -> Mark.INVALID).collect(Collectors.toList()));
 	}
 
 	public boolean isWordGuessed(){
