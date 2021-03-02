@@ -5,10 +5,7 @@ import lombok.Setter;
 import nl.hu.cisq1.lingo.trainer.domain.exception.InvalidFeedbackException;
 import nl.hu.cisq1.lingo.words.domain.Word;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -17,11 +14,13 @@ import java.util.stream.IntStream;
 public class Feedback {
 	private Word word;
 	private String attempt;
-	private List<Mark> hints;
+	private List<Mark> markings;
+	private Stack<List<Character>> hints;
 
-	public Feedback(String attempt, List<Mark> hints) throws InvalidFeedbackException {
+	public Feedback(String attempt, List<Mark> markings) throws InvalidFeedbackException {
 		this.attempt = attempt;
-		this.hints = hints;
+		this.markings = markings;
+		this.hints = new Stack<>();
 	}
 
 	public static Feedback correct(String attempt) {
@@ -34,38 +33,35 @@ public class Feedback {
 				.mapToObj(i -> Mark.INVALID).collect(Collectors.toList()));
 	}
 
-	public boolean isWordGuessed(){
-		return hints.stream().allMatch(m -> m == Mark.CORRECT);
+	public boolean isWordGuessed() {
+		return markings.stream().allMatch(m -> m == Mark.CORRECT);
 	}
 
-	public boolean guessIsInvalid(){
-		return hints.stream().anyMatch(m -> m == Mark.INVALID);
+	public boolean guessIsInvalid() {
+		return markings.stream().anyMatch(m -> m == Mark.INVALID);
 	}
 
-	public ArrayList<Mark> giveHint(){
-		String w = this.word.getValue();
-		String a = this.attempt;
-		ArrayList<Mark> marks = new ArrayList<>();
-		char[] ch = new char[a.length()];
+	public List<Character> giveHint() {
+		String w = this.word.getValue().toUpperCase();
+		List<Character> hint = new ArrayList<>();
 
-		for (int i = 0; i < a.length(); i++) {
-			ch[i] = a.charAt(i);
-		}
-		for(char i : ch){
-			if (i == w.charAt(i)){
-				marks.add(Mark.CORRECT);
+		if (hints.empty())
+			hints.push(IntStream.range(0, this.attempt.length()).mapToObj(i -> '.').
+					collect(Collectors.toList()));
+
+		for (int i = 0; i < this.attempt.length(); i++) {
+			char h = hints.peek().get(i);
+
+			if (this.attempt.charAt(i) == w.charAt(i)) {
+				hint.set(i, w.charAt(i));
+			} else if (w.contains(String.valueOf(this.attempt.charAt(i)))) {
+				hint.set(i, (char) (w.charAt(i) + 32));
+			} else {
+				hint.set(i, h);
 			}
-			else if(w.contains(String.valueOf(i))){
-				marks.add(Mark.PRESENT);
-			}
-			else if(!w.contains(String.valueOf(i))){
-				marks.add(Mark.ABSENT);
-			}
 		}
-		for(int i = 0; i < a.length() - this.word.getLength(); i++){
-			marks.add(Mark.INVALID);
-		}
-		return marks;
+		hints.push(hint);
+		return hint;
 	}
 
 	@Override
@@ -74,19 +70,19 @@ public class Feedback {
 		if (o == null || getClass() != o.getClass()) return false;
 		Feedback feedback = (Feedback) o;
 		return Objects.equals(attempt, feedback.attempt) &&
-				Objects.equals(hints, feedback.hints);
+				Objects.equals(markings, feedback.markings);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(attempt, hints);
+		return Objects.hash(attempt, markings);
 	}
 
 	@Override
 	public String toString() {
 		return "Feedback{" +
 				"attempt='" + attempt + '\'' +
-				", hints=" + hints +
+				", hints=" + markings +
 				'}';
 	}
 }
