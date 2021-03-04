@@ -28,6 +28,11 @@ public class Feedback {
 				.mapToObj(i -> Mark.CORRECT).collect(Collectors.toList()));
 	}
 
+	public static Feedback absent(String attempt) {
+		return new Feedback(attempt, IntStream.range(0, attempt.length())
+				.mapToObj(i -> Mark.ABSENT).collect(Collectors.toList()));
+	}
+
 	public static Feedback invalid(String attempt) {
 		return new Feedback(attempt, IntStream.range(0, attempt.length())
 				.mapToObj(i -> Mark.INVALID).collect(Collectors.toList()));
@@ -41,25 +46,16 @@ public class Feedback {
 		return markings.stream().anyMatch(m -> m == Mark.INVALID);
 	}
 
-	public List<Character> giveHint() {
-		String w = this.word.getValue().toUpperCase();
+	public List<Character> giveHint(List<Character> previousHint, String wordToGuess) {
 		List<Character> hint = new ArrayList<>();
 
 		if (hints.empty())
 			hints.push(IntStream.range(0, this.attempt.length()).mapToObj(i -> '.').
 					collect(Collectors.toList()));
 
-		for (int i = 0; i < this.attempt.length(); i++) {
-			char h = hints.peek().get(i);
+		for (int i = 0; i < this.attempt.length(); i++)
+			hint.set(i,  markings.get(i) == Mark.CORRECT ? wordToGuess.charAt(i) : previousHint.get(i));
 
-			if (this.attempt.charAt(i) == w.charAt(i)) {
-				hint.set(i, w.charAt(i));
-			} else if (w.contains(String.valueOf(this.attempt.charAt(i)))) {
-				hint.set(i, (char) (w.charAt(i) + 32));
-			} else {
-				hint.set(i, h);
-			}
-		}
 		hints.push(hint);
 		return hint;
 	}
