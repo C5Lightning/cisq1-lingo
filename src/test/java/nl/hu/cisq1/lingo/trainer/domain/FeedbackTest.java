@@ -79,25 +79,23 @@ class FeedbackTest {
 	@ParameterizedTest
 	@MethodSource("provideHintExamples")
 	@DisplayName("Here the hint function will test if word is incorrect")
-	void giveHintFunctionTest(Feedback fb, List<Character> expectedHint) {
-
-	}
-
-	private static List<Character> toCList(String str){
-		return str.chars().mapToObj(i -> Character.forDigit(i, 10)).collect(Collectors.toList());
+	void giveHintFunctionTest(String givenHint, String expectedHint) {
+		assertEquals(givenHint, expectedHint);
 	}
 
 	private static Stream<Arguments> provideHintExamples() {
-		Feedback fbWoord = Feedback.absent("woord");
-
+		Feedback fbSamen = Feedback.absent("woord");
 		Feedback fbHallo = Feedback.correct("hallo");
+		Feedback fbBattle = new Feedback("bottle", List.of(Mark.CORRECT,
+				Mark.ABSENT, Mark.CORRECT, Mark.CORRECT, Mark.CORRECT, Mark.CORRECT));
+		Feedback fbInitial = new Feedback("certain", List.of(Mark.ABSENT, Mark.ABSENT,
+				Mark.ABSENT, Mark.CORRECT, Mark.ABSENT, Mark.ABSENT, Mark.ABSENT));
+
 		return Stream.of(
-				Arguments.of(fbWoord.giveHint(toCList("....."), "woord"), toCList(".....")),
-				Arguments.of(fbWoord, true),
-				Arguments.of("  ", true),
-				Arguments.of("not blank", false)
+				Arguments.of(fbSamen.giveHint("S....", "samen"), "S...."),
+				Arguments.of(fbHallo.giveHint("HA...", "hallo"), "HALLO"),
+				Arguments.of(fbBattle.giveHint("B.TT..", "battle"), "B.TTLE"),
+				Arguments.of(fbInitial.giveHint("IN.....", "initial"), "IN.T...")
 		);
 	}
-	// tests voor elke hint optie, moet met max 3 tests wel te doen zijn
-	//
 }

@@ -15,12 +15,10 @@ public class Feedback {
 	private Word word;
 	private String attempt;
 	private List<Mark> markings;
-	private Stack<List<Character>> hints;
 
 	public Feedback(String attempt, List<Mark> markings) throws InvalidFeedbackException {
 		this.attempt = attempt;
 		this.markings = markings;
-		this.hints = new Stack<>();
 	}
 
 	public static Feedback correct(String attempt) {
@@ -46,18 +44,20 @@ public class Feedback {
 		return markings.stream().anyMatch(m -> m == Mark.INVALID);
 	}
 
-	public List<Character> giveHint(List<Character> previousHint, String wordToGuess) {
-		List<Character> hint = new ArrayList<>();
+	public String giveHint(String previousHint, String wordToGuess) throws InvalidFeedbackException {
+		if (guessIsInvalid()) throw new InvalidFeedbackException("Markings invalid");
+		StringBuilder hint = new StringBuilder();
+		hint.setLength(wordToGuess.length());
+		wordToGuess = wordToGuess.toUpperCase();
 
-		if (hints.empty())
-			hints.push(IntStream.range(0, this.attempt.length()).mapToObj(i -> '.').
-					collect(Collectors.toList()));
+//		if (hints.empty())
+//			hints.push(IntStream.range(0, this.attempt.length()).mapToObj(i -> '.').
+//					collect(Collectors.toList()));
 
-		for (int i = 0; i < this.attempt.length(); i++)
-			hint.set(i,  markings.get(i) == Mark.CORRECT ? wordToGuess.charAt(i) : previousHint.get(i));
+		for (int i = 0; i < wordToGuess.length(); i++)
+			hint.setCharAt(i,  markings.get(i) == Mark.CORRECT ? wordToGuess.charAt(i) : previousHint.charAt(i));
 
-		hints.push(hint);
-		return hint;
+		return hint.toString();
 	}
 
 	@Override

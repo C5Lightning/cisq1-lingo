@@ -19,7 +19,6 @@ public class Word {
     @Column(name = "word")
     private String value;
     private Integer length;
-    private ArrayList<Round> rounds;
 
     public Word(String word) {
         this.value = word;
