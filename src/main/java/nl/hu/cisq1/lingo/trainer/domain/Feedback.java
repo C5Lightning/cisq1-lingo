@@ -1,5 +1,6 @@
 package nl.hu.cisq1.lingo.trainer.domain;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import nl.hu.cisq1.lingo.trainer.domain.exception.InvalidFeedbackException;
@@ -9,16 +10,18 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@Getter
-@Setter
+@Data
 public class Feedback {
 	private Word word;
 	private String attempt;
 	private List<Mark> markings;
 
-	public Feedback(String attempt, List<Mark> markings) throws InvalidFeedbackException {
+	public Feedback(String attempt, List<Mark> markings){
 		this.attempt = attempt;
 		this.markings = markings;
+		if(markings.size() != attempt.length()){
+			throw new InvalidFeedbackException("The markings are not the same length as the attempt!");
+		}
 	}
 
 	public static Feedback correct(String attempt) {
@@ -46,39 +49,19 @@ public class Feedback {
 
 	public String giveHint(String previousHint, String wordToGuess) throws InvalidFeedbackException {
 		if (guessIsInvalid()) throw new InvalidFeedbackException("Markings invalid");
-		StringBuilder hint = new StringBuilder();
-		hint.setLength(wordToGuess.length());
-		wordToGuess = wordToGuess.toUpperCase();
+		else {
+			StringBuilder hint = new StringBuilder();
+			hint.setLength(wordToGuess.length());
+			wordToGuess = wordToGuess.toUpperCase();
 
 //		if (hints.empty())
 //			hints.push(IntStream.range(0, this.attempt.length()).mapToObj(i -> '.').
 //					collect(Collectors.toList()));
 
-		for (int i = 0; i < wordToGuess.length(); i++)
-			hint.setCharAt(i,  markings.get(i) == Mark.CORRECT ? wordToGuess.charAt(i) : previousHint.charAt(i));
+			for (int i = 0; i < wordToGuess.length(); i++)
+				hint.setCharAt(i, markings.get(i) == Mark.CORRECT ? wordToGuess.charAt(i) : previousHint.charAt(i));
 
-		return hint.toString();
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Feedback feedback = (Feedback) o;
-		return Objects.equals(attempt, feedback.attempt) &&
-				Objects.equals(markings, feedback.markings);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(attempt, markings);
-	}
-
-	@Override
-	public String toString() {
-		return "Feedback{" +
-				"attempt='" + attempt + '\'' +
-				", hints=" + markings +
-				'}';
+			return hint.toString();
+		}
 	}
 }

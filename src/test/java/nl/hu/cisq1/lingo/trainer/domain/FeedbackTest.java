@@ -38,11 +38,11 @@ class FeedbackTest {
 	@Test
 	@DisplayName("Word is not a valid attempt at a guess")
 	void guessIsInvalid() {
-		Feedback fb = new Feedback("woord",
-				List.of(Mark.CORRECT, Mark.CORRECT, Mark.CORRECT,
-						Mark.CORRECT, Mark.CORRECT,
-						Mark.INVALID, Mark.INVALID));
-		assertTrue(fb.guessIsInvalid());
+		assertThrows(InvalidFeedbackException.class,
+				() -> new Feedback("woord",
+						List.of(Mark.CORRECT, Mark.CORRECT, Mark.CORRECT,
+								Mark.CORRECT, Mark.CORRECT,
+								Mark.INVALID, Mark.INVALID)));
 
 	}
 

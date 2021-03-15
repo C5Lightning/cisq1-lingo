@@ -21,7 +21,7 @@ public class Round {
 	private Feedback lastFeedback;
 	private Stack<String> hints;
 
-	public Round(Word wordToGuess) {
+	public Round(Word wordToGuess){
 		this.wordToGuess = wordToGuess;
 		this.attempts = new ArrayList<>();
 		String firstHint = wordToGuess.getValue().substring(0, 1) +
@@ -38,7 +38,7 @@ public class Round {
 				.forEach(i -> markings.set(i, this.wordToGuess.getValue().charAt(i) == attempt.charAt(i)
 						? Mark.CORRECT : Mark.ABSENT));
 
-		if (attempt.length() == this.wordToGuess.getLength()) {
+		if(attempt.length() == this.wordToGuess.getLength()){
 			Feedback fb = new Feedback(attempt, markings);
 			this.hints.push(fb.giveHint(this.hints.peek(), this.wordToGuess.getValue()));
 		}
@@ -48,7 +48,7 @@ public class Round {
 		return this.hints.peek();
 	}
 
-	public int getRoundnumber() {
+	public int getRoundnumber(){
 		return attempts.size();
 	}
 
